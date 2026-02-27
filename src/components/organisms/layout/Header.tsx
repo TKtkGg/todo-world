@@ -1,6 +1,7 @@
-import { Box, Button, Drawer, Flex, Heading, IconButton, Link, Portal } from "@chakra-ui/react"
+import { Box, Flex, Heading, Link } from "@chakra-ui/react"
 import { memo, useState, type FC } from "react"
-import { FaBars } from 'react-icons/fa';
+import { MenuIconButton } from "../../atoms/button/MenuIconButton";
+import { MenuDrawer } from "../../molecules/MenuDrawer";
 
 export const Header: FC = memo(() => {
     const [open, setOpen] = useState(false)
@@ -30,32 +31,9 @@ export const Header: FC = memo(() => {
             </Box>
             <Link>設定</Link>
         </Flex>
-        <IconButton 
-            aria-label="メニューボタン" 
-            onClick={() => setOpen(true)}
-            display={{ md: "none" }}>
-            <FaBars />
-        </IconButton>
+        <MenuIconButton setOpen={setOpen} />
     </Flex>
-        <Drawer.Root
-            placement="start"
-            size="xs"
-            open={open}
-            onOpenChange={(e) => setOpen(e.open)}
-        >
-            <Portal>
-                <Drawer.Backdrop />
-                <Drawer.Positioner>
-                    <Drawer.Content>
-                        <Drawer.Body p={0} bg="gray.100">
-                            <Button w="100%">TOP</Button>
-                            <Button w="100%">ユーザー一覧</Button>
-                            <Button w="100%">設定</Button>
-                        </Drawer.Body>
-                    </Drawer.Content>
-                </Drawer.Positioner>
-            </Portal>
-    </Drawer.Root>
+    <MenuDrawer open={open} setOpen={setOpen} />
     </>
   );
 });
