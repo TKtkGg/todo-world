@@ -48,6 +48,29 @@ export async function loginApi(
     return response.json();
 }
 
+export async function refreshTokenApi(
+    refreshToken: string
+): Promise<LoginResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/accounts/token/refresh`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refresh: refreshToken }),
+    });
+
+    if(!response.ok) {
+        throw new Error("セッションの更新に失敗しました。再度ログインしてください。");
+    }
+
+    const data = await response.json();
+    return{
+        access: data.access,
+        refresh: data.refresh ?? refreshToken,
+    }
+} 
+
+
 export async function fetchMe(accessToken: string): Promise<MeResponse> {
     const response = await fetch(`${API_BASE_URL}/api/accounts/me`, {
         method: "GET",
@@ -56,10 +79,30 @@ export async function fetchMe(accessToken: string): Promise<MeResponse> {
         },
     });
 
-    if (!response.ok) {
-        throw new Error("ユーザー情報の取得に失敗しました。再度ログインしてください。");
+    if (response.ok) {
+        return response.json();
     }
-    return response.json();
+
+    if(response.status === 401) {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if(!refreshToken){
+            throw new Error("ログイン状態が無効になりました。再度ログインしてください。");
+        }
+
+        try {
+            const newTokens = await refreshTokenApi(refreshToken);
+            localStorage.setItem("accessToken", newTokens.access);
+            localStorage.setItem("refreshToken", newTokens.refresh);
+
+            return fetchMe(newTokens.access);
+        } catch {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            throw new Error("セッションの更新に失敗しました。再度ログインしてください。");
+        }
+    }
+
+    throw new Error("ユーザー情報の取得に失敗しました。再度ログインしてください。");
 }
 
 export async function registerApi(
