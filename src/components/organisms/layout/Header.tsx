@@ -22,6 +22,13 @@ export const Header: FC = memo(() => {
         setOpen(false);
     } ,[]);
 
+    const onClickLogout = useCallback(() => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        navigate("/")
+        setOpen(false);
+    } ,[]);
+
   return (
     <>
     <Flex 
@@ -47,7 +54,10 @@ export const Header: FC = memo(() => {
             <Box pr={4}>
                 <Link onClick={onClickUserManagement}>ユーザー一覧</Link>
             </Box>
-            <Link onClick={onClickSetting}>設定</Link>
+            <Box pr={4}>
+                <Link onClick={onClickSetting}>設定</Link>
+            </Box>
+            <Link onClick={onClickLogout}>ログアウト</Link>
         </Flex>
         <MenuIconButton setOpen={setOpen} />
     </Flex>
@@ -57,6 +67,7 @@ export const Header: FC = memo(() => {
         onClickHome={onClickHome}
         onClickSetting={onClickSetting} 
         onClickUserManagement={onClickUserManagement} 
+        onClickLogout={onClickLogout}
     />
     </>
   );
