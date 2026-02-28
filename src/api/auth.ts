@@ -1,17 +1,28 @@
 export type LoginRequest = {
     username: string;
     password: string;
-}
+};
 
 export type LoginResponse = {
     access: string;
     refresh: string;
-}
+};
 
 export type MeResponse = {
     id: number;
     username: string;
-}
+};
+
+export type RegisterRequest = {
+    username: string;
+    password: string;
+    password_confirm: string;
+};
+
+export type RegisterResponse = {
+    id: number;
+    username: string;
+};
 
 const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -47,6 +58,27 @@ export async function fetchMe(accessToken: string): Promise<MeResponse> {
 
     if (!response.ok) {
         throw new Error("ユーザー情報の取得に失敗しました。再度ログインしてください。");
+    }
+    return response.json();
+}
+
+export async function registerApi(
+    data: RegisterRequest
+): Promise<RegisterResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/accounts/register`, {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+
+    if(!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        const detail = 
+            (errorBody && (errorBody.username?.[0] || errorBody.password_confirm?.[0] || JSON.stringify(errorBody))) ||
+            "登録に失敗しました";
+        throw new Error(detail);
     }
     return response.json();
 }

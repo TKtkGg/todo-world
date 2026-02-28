@@ -18,11 +18,10 @@ export const AuthTop = () => {
             ログイン
           </Button>
           <Button
-            variant="outline"
+            colorScheme="blue"
             onClick={() => navigate("/accounts/register")}
-            disabled
           >
-            アカウント登録（準備中）
+            アカウント登録
           </Button>
         </Stack>
       </Box>

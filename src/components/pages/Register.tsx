@@ -2,21 +2,23 @@ import { Box, Flex, Heading, Input, Separator, Stack, Text } from "@chakra-ui/re
 import { FC, memo, useState } from "react"
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { useNavigate } from "react-router-dom";
-import { loginApi } from "../../api/auth";
+import { loginApi, registerApi } from "../../api/auth";
 
-export const Login: FC = memo(() => {
+export const Register: FC = memo(() => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     setErrorMessage(null);
     setIsLoading(true);
     try {
-      const result = await loginApi({ username, password });
+      await registerApi({ username, password, password_confirm: passwordConfirm });
 
+      const result = await loginApi({ username, password });
       localStorage.setItem("accessToken", result.access);
       localStorage.setItem("refreshToken", result.refresh);
 
@@ -35,7 +37,7 @@ export const Login: FC = memo(() => {
   return (
     <Flex align="center" justify="center" height="100vh">
       <Box bg="white" w="sm" p={4} borderRadius="md" boxShadow="md">
-        <Heading as="h1" size="lg" textAlign="center">ログイン</Heading>
+        <Heading as="h1" size="lg" textAlign="center">アカウント登録</Heading>
         <Separator my={4} />
         <Stack spaceY={3} py={4} px={10}>
           {errorMessage && (
@@ -43,8 +45,9 @@ export const Login: FC = memo(() => {
           )}
           <Input placeholder="ユーザー名" value={username} onChange={(e) => setUsername(e.target.value)} />
           <Input placeholder="パスワード" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <PrimaryButton disabled={isLoading} onClick={handleLogin}>
-            {isLoading ? "ログイン中..." : "ログイン"}
+          <Input placeholder="パスワード(確認)" type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
+          <PrimaryButton disabled={isLoading} onClick={handleRegister}>
+            {isLoading ? "登録中..." : "登録する"}
           </PrimaryButton>
         </Stack>
       </Box>
