@@ -3,6 +3,7 @@ import { FC, memo, useState } from "react"
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import { loginApi } from "../../api/auth";
+import { useMessage } from "../../hooks/useMessage";
 
 export const Login: FC = memo(() => {
   const [username, setUsername] = useState("");
@@ -10,6 +11,7 @@ export const Login: FC = memo(() => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { showMessage } = useMessage();
 
   const handleLogin = async () => {
     setErrorMessage(null);
@@ -19,14 +21,10 @@ export const Login: FC = memo(() => {
 
       localStorage.setItem("accessToken", result.access);
       localStorage.setItem("refreshToken", result.refresh);
-
+      showMessage({ title: "ログインしました", type: "success" });
       navigate("/home");
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      }else{
-        setErrorMessage("予期せぬエラーが発生しました。");
-      }
+      showMessage({ title: "ログインに失敗しました", type: "error" });
     } finally {
       setIsLoading(false);
     }
@@ -38,9 +36,6 @@ export const Login: FC = memo(() => {
         <Heading as="h1" size="lg" textAlign="center">ログイン</Heading>
         <Separator my={4} />
         <Stack spaceY={3} py={4} px={10}>
-          {errorMessage && (
-            <Text color="red.500" fontSize="sm">{errorMessage}</Text>
-          )}
           <Input placeholder="ユーザー名" value={username} onChange={(e) => setUsername(e.target.value)} />
           <Input placeholder="パスワード" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           <PrimaryButton disabled={isLoading} onClick={handleLogin}>

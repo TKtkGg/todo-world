@@ -3,6 +3,7 @@ import { FC, memo, useState } from "react"
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import { loginApi, registerApi } from "../../api/auth";
+import { useMessage } from "../../hooks/useMessage";
 
 export const Register: FC = memo(() => {
   const [username, setUsername] = useState("");
@@ -11,6 +12,7 @@ export const Register: FC = memo(() => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { showMessage } = useMessage();
 
   const handleRegister = async () => {
     setErrorMessage(null);
@@ -21,14 +23,10 @@ export const Register: FC = memo(() => {
       const result = await loginApi({ username, password });
       localStorage.setItem("accessToken", result.access);
       localStorage.setItem("refreshToken", result.refresh);
-
+      showMessage({ title: "アカウントを作成しました", type: "success" });
       navigate("/home");
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      }else{
-        setErrorMessage("予期せぬエラーが発生しました。");
-      }
+      showMessage({ title: "アカウント作成に失敗しました", type: "error" });
     } finally {
       setIsLoading(false);
     }

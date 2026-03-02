@@ -1,5 +1,6 @@
-import { Box, Button, Flex, Heading, Stack } from "@chakra-ui/react";
+import { Box, Flex, Heading, Stack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { PrimaryButton } from "../atoms/button/PrimaryButton";
 
 export const AuthTop = () => {
   const navigate = useNavigate();
@@ -11,18 +12,16 @@ export const AuthTop = () => {
           認証メニュー
         </Heading>
         <Stack spaceY={4} mt={8}>
-          <Button
-            colorScheme="blue"
+          <PrimaryButton
             onClick={() => navigate("/accounts/login")}
           >
             ログイン
-          </Button>
-          <Button
-            colorScheme="blue"
+          </PrimaryButton>
+          <PrimaryButton
             onClick={() => navigate("/accounts/register")}
           >
             アカウント登録
-          </Button>
+          </PrimaryButton>
         </Stack>
       </Box>
     </Flex>
