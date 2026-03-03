@@ -2,20 +2,63 @@ import { FC, memo, useEffect, useState } from "react"
 import { useAuth } from "../../contexts/AuthContent";
 import { Avatar, Box, Flex, Heading, Input, Spinner, Stack, Textarea } from "@chakra-ui/react";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
+import { useMessage } from "../../hooks/useMessage";
+import { fetchProfile, updateProfile } from "../../api/profile";
+import { semanticTokens } from "@chakra-ui/react/theme";
 
 export const Profile: FC = memo(() => {
   const { user, isLoading } = useAuth();
+  const { showMessage } = useMessage();
 
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isProfileLoading, setIsProfileLoading] = useState(true)
 
   useEffect(() => {
-    if (!user) return;
-    setUsername(user.username ?? "");
-    setMessage("");
-  }, [user]);
+    const loadProfile = async () => {
+        try{
+            const profile = await fetchProfile();
+            setUsername(profile.username ?? "");
+            setMessage(profile.message ?? "");
+        } catch(error) {
+            showMessage({
+                title: error instanceof Error ? error.message : "プロフィールの取得に失敗しました",
+                type: "error",
+            });
+        } finally {
+            setIsProfileLoading(false)
+        }
+    }
+    loadProfile()
+  }, [showMessage]);
 
-  if(isLoading) {
+  const handleSave = async () => {
+    setIsSaving(true);
+    try{
+        const updated = await updateProfile({
+            username,
+            message,
+        });
+
+        showMessage({
+            title: "プロフィールを保存しました",
+            type: "success",
+        });
+
+        setUsername(updated.username ?? "");
+        setMessage(updated.message ?? "");
+    } catch (error) {
+        showMessage({
+            title: error instanceof Error ? error.message : "プロフィールの保存に失敗しました",
+            type: "error",
+        });
+    } finally {
+        setIsSaving(false)
+    }
+  }
+
+  if(isLoading || isProfileLoading) {
     return (
         <Flex align="center" justify="center" height="70vh">
             <Spinner size="xl" />
@@ -53,7 +96,9 @@ export const Profile: FC = memo(() => {
                             <Textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="メッセージ" rows={4} />
                         </Box>
                     </Stack>
-                    <PrimaryButton>保存</PrimaryButton>
+                    <PrimaryButton disabled={isSaving} onClick={handleSave}>
+                        {isSaving ? "保存中..." : "保存"}
+                    </PrimaryButton>
                 </Stack>
             </Box>
         </Flex>
