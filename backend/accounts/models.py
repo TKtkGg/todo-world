@@ -15,7 +15,7 @@ class Profile(models.Model):
     message = models.TextField(blank=True)
 
     # アイコン
-    # icon_url = models.URLField(blank=True)
+    icon_url = models.URLField(blank=True)
 
     def __str__(self) -> str:
         return f"Profile({self.user.username})"

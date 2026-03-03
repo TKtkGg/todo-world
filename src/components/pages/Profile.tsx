@@ -4,7 +4,6 @@ import { Avatar, Box, Flex, Heading, Input, Spinner, Stack, Textarea } from "@ch
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { useMessage } from "../../hooks/useMessage";
 import { fetchProfile, updateProfile } from "../../api/profile";
-import { semanticTokens } from "@chakra-ui/react/theme";
 
 export const Profile: FC = memo(() => {
   const { user, isLoading } = useAuth();
@@ -12,6 +11,7 @@ export const Profile: FC = memo(() => {
 
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
+  const [iconUrl, setIconUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(true)
 
@@ -21,6 +21,7 @@ export const Profile: FC = memo(() => {
             const profile = await fetchProfile();
             setUsername(profile.username ?? "");
             setMessage(profile.message ?? "");
+            setIconUrl(profile.iconUrl ?? "");
         } catch(error) {
             showMessage({
                 title: error instanceof Error ? error.message : "プロフィールの取得に失敗しました",
@@ -39,6 +40,7 @@ export const Profile: FC = memo(() => {
         const updated = await updateProfile({
             username,
             message,
+            iconUrl,
         });
 
         showMessage({
@@ -48,6 +50,7 @@ export const Profile: FC = memo(() => {
 
         setUsername(updated.username ?? "");
         setMessage(updated.message ?? "");
+        setIconUrl(updated.iconUrl ?? "");
     } catch (error) {
         showMessage({
             title: error instanceof Error ? error.message : "プロフィールの保存に失敗しました",
@@ -81,11 +84,16 @@ export const Profile: FC = memo(() => {
                     <Flex justify="center">
                         <Avatar.Root size="2xl">
                             <Avatar.Fallback name={username || user?.username || "user"} />
-                            <Avatar.Image src="" />
+                            <Avatar.Image src={iconUrl || undefined} />
                         </Avatar.Root>
                     </Flex>
                 
                     <Stack gap={2} textAlign="left">
+                        <Box>
+                            <Box fontSize="sm" color="gray.600" mb={1}>アイコン</Box>
+                            <Input value={iconUrl} onChange={(e) => setIconUrl(e.target.value)} placeholder="https://example.com/icon.png" />
+                        </Box>
+
                         <Box>
                             <Box fontSize="sm" color="gray.600" mb={1}>ユーザーネーム</Box>
                             <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="ユーザーネーム" />

@@ -4,6 +4,7 @@ export type ProfileResponse =  {
     id: number
     username: string
     message: string
+    iconUrl: string
 }
 
 function getAccessTokenOrThrow(): string {
@@ -31,13 +32,28 @@ export async function fetchProfile(): Promise<ProfileResponse> {
             "プロフィールの取得に失敗しました。";
         throw new Error(detail);
     }
-    return response.json();
+    
+    const raw = await response.json() as {
+        id: number
+        username: string
+        message: string
+        icon_url?: string
+    }
+
+    return {
+        id: raw.id,
+        username: raw.username,
+        message: raw.message,
+        iconUrl: raw.icon_url ?? "",
+    }
+
 }
 
 
 export type UpdateProfileRequest = {
     username?: string
     message?: string
+    iconUrl?: string
 }
 
 export async function updateProfile(
@@ -51,7 +67,11 @@ export async function updateProfile(
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+            username: data.username,
+            message: data.message,
+            icon_url: data.iconUrl,
+        }),
     });
 
     if(!response.ok) {
@@ -62,5 +82,17 @@ export async function updateProfile(
         throw new Error(detail);
     }
 
-    return response.json();
+    const raw = await response.json() as {
+        id: number
+        username: string
+        message: string
+        icon_url?: string
+    }
+
+    return {
+        id: raw.id,
+        username: raw.username,
+        message: raw.message,
+        iconUrl: raw.icon_url ?? "",
+    }
 }

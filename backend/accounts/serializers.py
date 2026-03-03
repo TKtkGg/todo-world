@@ -32,6 +32,7 @@ class ProfileSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     username = serializers.CharField()
     message = serializers.CharField(allow_blank=True, required=False)
+    icon_url = serializers.CharField(allow_blank=True, required=False)
 
     def to_representation(self, instance):
         user = instance
@@ -39,13 +40,16 @@ class ProfileSerializer(serializers.Serializer):
         try:
             profile = user.profile
             message = profile.message or ""
+            icon_url = profile.icon_url or ""
         except Profile.DoesNotExist:
             message = ""
+            icon_url = ""
 
         return {
             "id": user.id,
             "username": user.username,
             "message": message,
+            "icon_url": icon_url
         }
     
     def update(self, instance, validated_data):
@@ -61,7 +65,12 @@ class ProfileSerializer(serializers.Serializer):
         new_message = validated_data.get("message")
         if new_message is not None:
             profile.message = new_message
-            profile.save()
+        
+        new_icon_url = validated_data.get("icon_url")
+        if new_icon_url is not None:
+            profile.icon_url = new_icon_url
+        
+        profile.save()
 
         return user
 
