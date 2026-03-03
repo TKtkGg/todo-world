@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 
-from .serializers import ProfileSerializer, RegisterSerializer, UserSerializer
+from .serializers import ProfileSerializer, RegisterSerializer, UserWithIconSerializer
 
 User = get_user_model()
 
@@ -24,7 +24,7 @@ class MeView(APIView):
 
 class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserWithIconSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class ProfileView(APIView):

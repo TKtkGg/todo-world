@@ -74,9 +74,22 @@ class ProfileSerializer(serializers.Serializer):
 
         return user
 
-class UserSerializer(serializers.ModelSerializer):
+class UserWithIconSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    username = serializers.CharField()
+    icon_url = serializers.CharField(allow_blank=True, required=False)
 
-    class Meta:
-        model = User
-        fields = ["id", "username"]
-        read_only_fields = ["id", "username"]
+    def to_representation(self, instance):
+        user = instance
+        try:
+            profile = user.profile
+            icon_url = profile.icon_url or ""
+        except Profile.DoesNotExist:
+            icon_url = ""
+
+        return {
+            "id": user.id,
+            "username": user.username,
+            "icon_url": icon_url,
+        }
+    

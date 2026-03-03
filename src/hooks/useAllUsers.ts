@@ -5,6 +5,7 @@ import { fetchAllUsers } from "../api/users";
 type User = {
     id: number;
     username: string;
+    iconUrl: string;
 }
 
 export const useAllUsers = () => {

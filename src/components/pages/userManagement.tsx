@@ -21,8 +21,8 @@ export const UserManagement: FC = memo(() => {
   return (
     <Wrap p={{ base: 4, md: 10 }}>
       {users.map((user) => (
-        <WrapItem mx="auto">
-          <UserCard imageUrl="https://picsum.photos/800" username={user.username} />
+        <WrapItem key={user.id} mx="auto">
+          <UserCard imageUrl={user.iconUrl || ""} username={user.username} />
         </WrapItem>
       ))}
     </Wrap>

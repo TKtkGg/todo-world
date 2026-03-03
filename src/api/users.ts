@@ -3,6 +3,7 @@ const API_BASE_URL = "http://127.0.0.1:8000";
 export type User = {
     id: number;
     username: string;
+    iconUrl: string;
 };
 
 export async function fetchAllUsers(): Promise<User[]> {
@@ -23,5 +24,16 @@ export async function fetchAllUsers(): Promise<User[]> {
             "ユーザー取得に失敗しました";
         throw new Error(detail);
     }
-    return response.json();
+
+    const raw = await response.json() as {
+        id: number;
+        username: string;
+        icon_url?: string;
+    }[];
+
+    return raw.map((u) => ({
+        id: u.id,
+        username: u.username,
+        iconUrl: u.icon_url ?? "",
+    }))
 }
