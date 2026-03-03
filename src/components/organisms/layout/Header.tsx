@@ -6,26 +6,31 @@ import { MenuDrawer } from "../../molecules/MenuDrawer";
 import { useNavigate } from "react-router-dom";
 
 export const Header: FC = memo(() => {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(false);
     const navigate = useNavigate();
 
     const onClickHome = useCallback(() => {
-        navigate("/home")
+        navigate("/home");
         setOpen(false);
     }, []);
     const onClickUserManagement = useCallback(() => {
-        navigate("/home/user_management")
+        navigate("/home/user_management");
         setOpen(false);
     }, []);
     const onClickSetting = useCallback(() => {
-        navigate("/home/setting")
+        navigate("/home/setting");
         setOpen(false);
-    } ,[]);
+    }, []);
+
+    const onClickProfile = useCallback(() => {
+        navigate("/home/profile");
+        setOpen(false);
+    }, []);
 
     const onClickLogout = useCallback(() => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        navigate("/")
+        navigate("/");
         setOpen(false);
     } ,[]);
 
@@ -57,6 +62,9 @@ export const Header: FC = memo(() => {
             <Box pr={4}>
                 <Link onClick={onClickSetting}>設定</Link>
             </Box>
+            <Box pr={4}>
+                <Link onClick={onClickProfile}>プロフィール</Link>
+            </Box>
             <Link onClick={onClickLogout}>ログアウト</Link>
         </Flex>
         <MenuIconButton setOpen={setOpen} />
@@ -66,7 +74,8 @@ export const Header: FC = memo(() => {
         setOpen={setOpen}
         onClickHome={onClickHome}
         onClickSetting={onClickSetting} 
-        onClickUserManagement={onClickUserManagement} 
+        onClickUserManagement={onClickUserManagement}
+        onClickProfile={onClickProfile} 
         onClickLogout={onClickLogout}
     />
     </>
