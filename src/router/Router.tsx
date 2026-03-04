@@ -7,6 +7,7 @@ import { accountsRoutes } from "./AccountsRoutes";
 import { AuthTop } from "../components/pages/AuthTop";
 import { AuthProvider } from "../contexts/AuthContent";
 import { ProtectedRoute } from "../components/guard/ProtectedRoute";
+import { TodoProvider } from "../contexts/TodoContext";
 
 export const Router: FC = memo(() => {
   return (
@@ -22,7 +23,9 @@ export const Router: FC = memo(() => {
         <Route path="/home" element={
           <AuthProvider>
             <ProtectedRoute>
-              <HeaderLayout><></></HeaderLayout>
+              <TodoProvider>
+                <HeaderLayout><></></HeaderLayout>
+              </TodoProvider>
             </ProtectedRoute>
           </AuthProvider>
           }

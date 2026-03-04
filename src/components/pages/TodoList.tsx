@@ -4,44 +4,19 @@ import "../../styles/todo.css"
 import { InputTodos } from "../organisms/todo/InputTodos";
 import { IncompleteTodos } from "../organisms/todo/IncompleteTodos";
 import { CompleteTodos } from "../organisms/todo/CompleteTodos";
+import { useTodos } from "../../contexts/TodoContext";
 
 export const TodoList: FC = memo(() => {
     const [todoText, setTodoText] = useState("");
-    const [incompleteTodos, setIncompleteTodos] = useState<string[]>([]);
-    const [completeTodos, setCompleteTodos] = useState<string[]>([]);
+    const { incompleteTodos, completeTodos, addTodo, deleteTodo, completeTodo, backTodo } = useTodos();
 
     const onChangeTodoText = (event: ChangeEvent<HTMLInputElement>) => 
         setTodoText(event.target.value);
 
     const onClickAdd = () => {
         if(todoText === "") return;
-        const newTodos = [...incompleteTodos,todoText];
-        setIncompleteTodos(newTodos);
+        addTodo(todoText);
         setTodoText("");
-    };
-
-    const onClickDelete = (index: number) => {
-        const newTodos = [...incompleteTodos];
-        newTodos.splice(index, 1);
-        setIncompleteTodos(newTodos);
-    };
-
-    const onClickComplete = (index: number) => {
-        const newIncompleteTodos = [...incompleteTodos];
-        newIncompleteTodos.splice(index, 1);
-
-        const newCompleteTodos = [...completeTodos, incompleteTodos[index]];
-        setIncompleteTodos(newIncompleteTodos);
-        setCompleteTodos(newCompleteTodos);
-    };
-
-    const onClickBack = (index: number) => {
-        const newCompleteTodos = [...completeTodos];
-        newCompleteTodos.splice(index, 1);
-
-        const newIncompleteTodos = [...incompleteTodos, completeTodos[index]];
-        setIncompleteTodos(newIncompleteTodos);
-        setCompleteTodos(newCompleteTodos);
     };
 
     const isMaxLimitIncompleteTodos = incompleteTodos.length >= 5;
@@ -62,12 +37,12 @@ export const TodoList: FC = memo(() => {
                     
                     <IncompleteTodos
                         todos={incompleteTodos}
-                        onClickComplete={onClickComplete}
-                        onClickDelete={onClickDelete}
+                        onClickComplete={completeTodo}
+                        onClickDelete={deleteTodo}
                     />
                     <CompleteTodos
                         todos={completeTodos}
-                        onClick={onClickBack}
+                        onClick={backTodo}
                     />
                 </Box>
             </Flex>
