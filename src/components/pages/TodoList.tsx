@@ -1,5 +1,5 @@
 import { useState, FC, memo, ChangeEvent } from "react"
-import { Flex, Box } from "@chakra-ui/react";
+import { Flex, Box, Heading } from "@chakra-ui/react";
 import "../../styles/todo.css"
 import { InputTodos } from "../organisms/todo/InputTodos";
 import { IncompleteTodos } from "../organisms/todo/IncompleteTodos";
@@ -23,6 +23,7 @@ export const TodoList: FC = memo(() => {
 
     return(
         <>
+            <Heading as="h1" size="2xl" textAlign="center" paddingTop={{ base: 3, md: 5}}>Todo</Heading>
             <Flex align="flex-start" justify="center" py={{ base: 6, md: 10 }}>
                 <Box w="450px" h="520px" bg="white" borderRadius="10px" shadow="md" p={4}>
                     <InputTodos
