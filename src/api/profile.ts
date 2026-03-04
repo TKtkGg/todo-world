@@ -49,6 +49,41 @@ export async function fetchProfile(): Promise<ProfileResponse> {
 
 }
 
+export async function fetchUserProfile(userId: number): Promise<ProfileResponse> {
+    const accessToken = getAccessTokenOrThrow();
+
+    const response = await fetch(
+        `${API_BASE_URL}/api/accounts/users/${userId}/profile`,{
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        },
+    );
+
+
+    if(!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        const detail = 
+            (errorBody && (errorBody.detail || JSON.stringify(errorBody))) ||
+            "プロフィールの取得に失敗しました。";
+        throw new Error(detail);
+    }
+
+    const raw = (await response.json()) as {
+        id: number;
+        username: string;
+        message: string;
+        icon_url?: string;
+    }
+
+    return {
+        id: raw.id,
+        username: raw.username,
+        message: raw.message,
+        iconUrl: raw.icon_url ?? "",
+    }
+}
 
 export type UpdateProfileRequest = {
     username?: string
