@@ -27,6 +27,11 @@ export const Header: FC = memo(() => {
         setOpen(false);
     }, []);
 
+    const onClickTodoList = useCallback(() => {
+        navigate("/home/todo_list");
+        setOpen(false);
+    }, []);
+
     const onClickLogout = useCallback(() => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
@@ -60,10 +65,13 @@ export const Header: FC = memo(() => {
                 <Link onClick={onClickUserManagement}>ユーザー一覧</Link>
             </Box>
             <Box pr={4}>
-                <Link onClick={onClickSetting}>設定</Link>
+                <Link onClick={onClickTodoList}>TODO</Link>
             </Box>
             <Box pr={4}>
                 <Link onClick={onClickProfile}>プロフィール</Link>
+            </Box>
+            <Box pr={4}>
+                <Link onClick={onClickSetting}>設定</Link>
             </Box>
             <Link onClick={onClickLogout}>ログアウト</Link>
         </Flex>
@@ -75,7 +83,8 @@ export const Header: FC = memo(() => {
         onClickHome={onClickHome}
         onClickSetting={onClickSetting} 
         onClickUserManagement={onClickUserManagement}
-        onClickProfile={onClickProfile} 
+        onClickProfile={onClickProfile}
+        onClickTodoList={onClickTodoList}
         onClickLogout={onClickLogout}
     />
     </>
