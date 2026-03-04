@@ -23,7 +23,7 @@ export const TodoList: FC = memo(() => {
 
     return(
         <>
-            <Heading as="h1" size="2xl" textAlign="center" paddingTop={{ base: 3, md: 5}}>Todo</Heading>
+            <Heading as="h1" size="4xl" textAlign="center" paddingTop={{ base: 3, md: 5}}>Todo</Heading>
             <Flex align="flex-start" justify="center" py={{ base: 6, md: 10 }}>
                 <Box w="450px" h="520px" bg="white" borderRadius="10px" shadow="md" p={4}>
                     <InputTodos

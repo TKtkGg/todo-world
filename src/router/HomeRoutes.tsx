@@ -3,6 +3,7 @@ import { Profile } from "../components/pages/Profile";
 import { Setting } from "../components/pages/Setting";
 import { TodoList } from "../components/pages/TodoList";
 import { UserManagement } from "../components/pages/userManagement";
+import { UserDetail } from "../components/pages/UserDetail";
 
 export const homeRoutes = [
     {
@@ -12,6 +13,10 @@ export const homeRoutes = [
     {
         path: "user_management",
         element: <UserManagement />
+    },
+    {
+        path: "user_management/:userId",
+        element: <UserDetail />
     },
     {
         path: "setting",
@@ -24,5 +29,6 @@ export const homeRoutes = [
     {
         path: "todo_list",
         element: <TodoList />
-    }
+    },
+    
 ]

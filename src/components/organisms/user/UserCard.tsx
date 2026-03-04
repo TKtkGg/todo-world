@@ -4,12 +4,13 @@ import { FC, memo } from "react"
 type Props = {
     imageUrl: string;
     username: string;
+    onClick?: () => void;
 }
 
 export const UserCard: FC<Props> = memo((props) => {
-    const { imageUrl, username } = props;
+    const { imageUrl, username, onClick } = props;
   return (
-    <Box w="260px" h="260px" bg="white" borderRadius="10px" shadow="md" p={4} _hover={{ cursor: "pointer", opacity: 0.8 }}>
+    <Box w="260px" h="260px" bg="white" borderRadius="10px" shadow="md" p={4} _hover={{ cursor: "pointer", opacity: 0.8 }} onClick={onClick}>
         <Stack textAlign="center">
           <Flex align="center" justify="center">
             <Avatar.Root size="2xl" style={{ width: 120, height: 120 }}>

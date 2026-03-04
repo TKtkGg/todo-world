@@ -71,7 +71,7 @@ export const Profile: FC = memo(() => {
 
   return (
     <div>
-        <Heading as="h1" size="lg" textAlign="center" paddingTop={{ base: 3, md: 5 }}>プロフィール</Heading>
+        <Heading as="h1" size="3xl" textAlign="center" paddingTop={{ base: 3, md: 5 }}>プロフィール</Heading>
         <Flex align="center" justify="center" py={{ base: 6, md: 10 }} px={4}>
             <Box
                 w={{ base: "100%", sm: "420px"}}
