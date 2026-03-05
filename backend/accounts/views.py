@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 
 from .serializers import ProfileSerializer, RegisterSerializer, TodoSerializer, UserWithIconSerializer
 
-from .models import Todo
+from .models import Like, Todo
 
 User = get_user_model()
 
@@ -110,3 +110,36 @@ class MyTodoDetailView(APIView):
         todo = self.get_todo(request, pk)
         todo.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserLikeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        if request.user.pk == pk:
+            return Response({"liked": False})
+        exists = Like.objects.filter(from_user=request.user, to_user_id=pk).exists()
+        return Response({"liked": exists})
+    
+    def post(self, request, pk):
+        if request.user.pk == pk:
+            return Response(
+                {"detail": "自分にはいいねできません。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            to_user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise NotFound("ユーザーが見つかりません。")
+        obj, created = Like.objects.get_or_create(
+            from_user=request.user,
+            to_user=to_user,
+        )
+
+        if not created: 
+            return Response(
+                {"detail": "すでにいいねしています。"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response({"liked": True}, status=status.HTTP_201_CREATED)

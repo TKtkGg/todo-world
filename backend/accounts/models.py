@@ -31,3 +31,22 @@ class Todo(models.Model):
 
     def __str__(self) -> str:
         return f"Todo({self.user.username}, {self.text[:20]})"
+
+class Like(models.Model):
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="likes_sent",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="likes_received",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = [["from_user", "to_user"]]
+
+    def __str__(self) -> str:
+        return f"Like({self.from_user.username} -> {self.to_user.username})"
