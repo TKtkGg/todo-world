@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Profile
+from .models import Profile, Todo
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -93,3 +93,8 @@ class UserWithIconSerializer(serializers.Serializer):
             "icon_url": icon_url,
         }
     
+class TodoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ["id", "text", "is_completed"]
+        read_only_fields = ["id"]

@@ -1,5 +1,7 @@
 import { createContext, useState, useEffect, useCallback, useContext } from "react";
 import type { ReactNode } from "react";
+import { useAuth } from "./AuthContent";
+import { createMyTodo, deleteMyTodo, fetchMyTodos, type TodoItemResponse, updateMyTodo } from "../api/todo";
 
 const STORAGE_KEY = "todo-world-todos";
 
@@ -14,85 +16,75 @@ type TodoContextType = {
 
 const TodoContext = createContext<TodoContextType | null>(null);
 
-function loadFromStorage(): { incomplete: string[]; complete: string[]; } {
-    try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return { incomplete: [], complete: []};
-        const parsed = JSON.parse(raw) as { incomplete?: string[]; complete?: string[];};
-        return {
-            incomplete: Array.isArray(parsed.incomplete) ? parsed.incomplete : [],
-            complete: Array.isArray(parsed.complete) ? parsed.complete : [],
-        }
-    } catch {
-        return { incomplete: [], complete: []};
-    }
-}
-
-function saveToStorage(incomplete: string[], complete: string[]) {
-    try {
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify({ incomplete, complete}),
-        )
-    } catch {
-        
-    }
-}
-
 type Props = { children: ReactNode };
 
 export function TodoProvider(props: Props) {
     const { children } = props;
+    const { user } = useAuth();
 
-    type TodoState = { incomplete: string[]; complete: string[]; };
-
-    const [todoState, setTodoState] = useState<TodoState>(() => loadFromStorage());
-
-    const incompleteTodos = todoState.incomplete;
-    const completeTodos = todoState.complete;
+    const [items, setItems] = useState<TodoItemResponse[]>([]);
+    const [loading, setLoading] = useState(true);
+    
+    const incompleteTodos = items.filter((i) => !i.is_completed).map((i) => i.text);
+    const completeTodos = items.filter((i) => i.is_completed).map((i) => i.text);
 
     // stateが変わるたびに localStorage に保存
     useEffect(() => {
-        saveToStorage(todoState.incomplete, todoState.complete);
-    }, [todoState]);
+        if(!user) {
+            setItems([]);
+            setLoading(false);
+            return;
+        }
+        let cancelled = false;
+        setLoading(true);
+        fetchMyTodos()
+            .then((data) => {
+                if (!cancelled) setItems(data);
+            })
+            .catch(() => {
+                if (!cancelled) setItems([]);
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            })
+        return () => {
+            cancelled = true;
+        }
+    }, [user?.id]);
 
     const addTodo = useCallback((text: string) => {
-        if (text === "") return;
-        setTodoState((prev) => ({
-            ...prev,
-            incomplete: [...prev.incomplete, text],
-        }));
+        if (!text.trim()) return;
+        createMyTodo(text.trim()).then((created) => {
+            setItems((prev) => [...prev, created]);
+        })
     }, []);
 
     const deleteTodo = useCallback((index: number) => {
-        setTodoState((prev) => {
-            const next = [...prev.incomplete];
-            next.splice(index, 1);
-            return {...prev, incomplete: next}
+        const list = items.filter((i) => !i.is_completed);
+        const item = list[index];
+        if (!item) return;
+        deleteMyTodo(item.id).then(() => {
+            setItems((prev) => prev.filter((i) => i.id !== item.id));
         })
-    }, []);
+    }, [items]);
 
     const completeTodo = useCallback((index: number) => {
-        setTodoState((prev) => {
-            const nextIncomplete = [...prev.incomplete];
-            const [item] = nextIncomplete.splice(index, 1);
-            return{
-                incomplete: nextIncomplete,
-                complete: [...prev.complete, item],
-            };
-        });
-    }, []);
+        const list = items.filter((i) => !i.is_completed);
+        const item = list[index];
+        if(!item) return
+        updateMyTodo(item.id, { is_completed: true }).then((updated) => {
+            setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)))
+        })
+    }, [items]);
 
     const backTodo = useCallback((index: number) => {
-        setTodoState((prev) => {
-            const nextComplete = [...prev.complete];
-            const [item] = nextComplete.splice(index, 1);
-            return{
-                incomplete: [...prev.incomplete, item],
-                complete: nextComplete,
-            };
+        const list = items.filter((i) => i.is_completed);
+        const item = list[index];;
+        if(!item) return;
+        updateMyTodo(item.id, { is_completed: false }).then((updated) => {
+            setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)))
         })
-    }, []);
+    }, [items]);
 
     const value: TodoContextType = {
         incompleteTodos,

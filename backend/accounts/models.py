@@ -19,3 +19,15 @@ class Profile(models.Model):
 
     def __str__(self) -> str:
         return f"Profile({self.user.username})"
+
+class Todo(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="todos",
+    )
+    text = models.CharField(max_length=500)
+    is_completed = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"Todo({self.user.username}, {self.text[:20]})"

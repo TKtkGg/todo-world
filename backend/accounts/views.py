@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 
-from .serializers import ProfileSerializer, RegisterSerializer, UserWithIconSerializer
+from .serializers import ProfileSerializer, RegisterSerializer, TodoSerializer, UserWithIconSerializer
+
+from .models import Todo
 
 User = get_user_model()
 
@@ -51,3 +53,60 @@ class UserProfileView(APIView):
             raise NotFound("ユーザーが見つかりません")
         serializer = ProfileSerializer(instance=user)
         return Response(serializer.data)
+
+class UserTodoListView(APIView):
+    permission_classes = {permissions.IsAuthenticated}
+
+    def get(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise NotFound("ユーザーが見つかりません。")
+        todos = Todo.objects.filter(user=user).order_by("id")
+        serializer = TodoSerializer(todos, many=True)
+        return Response(serializer.data)
+
+class MyTodoListCreateView(APIView):
+    permision_classes = {permissions.IsAuthenticated}
+
+    def get(self, request):
+        todos = Todo.objects.filter(user=request.user).order_by("id")
+        serializer = TodoSerializer(todos, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        text = request.data.get("text") or ""
+        text = text.strip()
+        if not text:
+            return Response(
+                {"text": ["このフィールドは空にできません。"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        todo = Todo.objects.create(user=request.user, text=text, is_completed=False)
+        serializer = TodoSerializer(todo)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class MyTodoDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_todo(self, request, pk):
+        try:
+            todo = Todo.objects.get(pk=pk, user=request.user)
+            return todo
+        except Todo.DoesNotExist:
+            raise NotFound("TODOが見つかりません。")
+
+    def patch(self, request, pk):
+        todo = self.get_todo(request, pk)
+        if "is_completed" in request.data:
+            todo.is_completed = bool(request.data["is_completed"])
+        if "text" in request.data:
+            todo.text = (request.data["text"] or "").strip() or todo.text
+        todo.save()
+        serializer = TodoSerializer(todo)
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        todo = self.get_todo(request, pk)
+        todo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -3,6 +3,8 @@ import { memo, useEffect, useState, type FC } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { fetchUserProfile, type ProfileResponse } from "../../api/profile";
 import { ProfileCard } from "../organisms/user/ProfileCard";
+import { fetchUserTodos } from "../../api/todo";
+import { TodoListPreview } from "../organisms/todo/TodoListPreview";
 
 export const UserDetail: FC = memo(() => {
     const { userId } = useParams<{ userId: string }>();
@@ -10,9 +12,14 @@ export const UserDetail: FC = memo(() => {
     const usernameFromState = (location.state as { username?: string } | null)?.username;
 
     const [profile, setProfile] = useState<ProfileResponse | null>(null);
+    const [userTodos, setUserTodos] = useState<{
+        incompleteTodos: string[];
+        completeTodos: string[];
+    } | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // プロフィール取得
     useEffect(() => {
         if (!userId) {
             setLoading(false);
@@ -30,6 +37,22 @@ export const UserDetail: FC = memo(() => {
             })
             .finally(() => {
                 if (!cancelled) setLoading(false);
+            })
+        return () => {
+            cancelled = true;
+        }
+    }, [userId]);
+
+    // TODO取得
+    useEffect(() => {
+        if (!userId) return;
+        let cancelled = false;
+        fetchUserTodos(Number(userId))
+            .then((data) => {
+                if(!cancelled) setUserTodos(data);
+            })
+            .catch(() => {
+                if(!cancelled) setUserTodos({ incompleteTodos: [], completeTodos: [] });
             })
         return () => {
             cancelled = true;
@@ -65,9 +88,16 @@ export const UserDetail: FC = memo(() => {
                 {/* TODO */}
                 <Box flex="1" minW={0}>
                     <Text fontWeight="bold" mb={2}>TODO</Text>
-                    <Box bg="gray.50" p={4} borderRadius="md" shadow="sm">
-                        <Text fontSize="sm" color="gray.600" mb={2}>TODO</Text>
-                    </Box>
+                    {userTodos ? (
+                        <TodoListPreview 
+                            incompleteTodos={userTodos.incompleteTodos}
+                            completeTodos={userTodos.completeTodos}
+                        />
+                    ) : (
+                        <Box bg="gray.50" p={4} borderRadius="md" shadow="sm">
+                            <Text fontSize="sm" color="gray.600">読み込み中...</Text>
+                        </Box>
+                    )}
                 </Box>
 
                 {/* プロフィール */}
