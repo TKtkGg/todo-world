@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-v2c62ep%2a=czvum#4wypbh3@8d&zu4#ujml6zuzr*w@@3pb4*'
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-v2c62ep%2a=czvum#4wypbh3@8d&zu4#ujml6zuzr*w@@3pb4*",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 # Application definition
@@ -137,9 +141,14 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://127.0.1:5173',
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
+# 本番フロントのURL（Render環境変数 CORS_ORIGINS でカンマ区切りで追加）
+if os.environ.get("CORS_ORIGINS"):
+    CORS_ALLOWED_ORIGINS.extend(
+        origin.strip() for origin in os.environ["CORS_ORIGINS"].split(",") if origin.strip()
+    )
 
 from datetime import timedelta
 SIMPLE_JWT = {
