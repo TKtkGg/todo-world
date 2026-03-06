@@ -1,5 +1,5 @@
 import { Flex, Spinner, Wrap, WrapItem } from "@chakra-ui/react";
-import { FC, memo, useEffect } from "react"
+import { memo, useEffect, type FC } from "react"
 import { UserCard } from "../organisms/user/UserCard";
 import { useAllUsers } from "../../hooks/useAllUsers";
 import { useNavigate } from "react-router-dom";

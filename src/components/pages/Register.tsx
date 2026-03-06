@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Input, Separator, Stack, Text } from "@chakra-ui/react";
-import { FC, memo, useState } from "react"
+import { memo, useState, type FC } from "react"
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import { loginApi, registerApi } from "../../api/auth";

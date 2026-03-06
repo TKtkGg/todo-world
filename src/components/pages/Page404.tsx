@@ -1,4 +1,4 @@
-import { FC, memo } from "react"
+import { memo, type FC } from "react"
 
 export const Page404: FC = memo(() => {
   return (

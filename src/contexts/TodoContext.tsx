@@ -3,8 +3,6 @@ import type { ReactNode } from "react";
 import { useAuth } from "./AuthContent";
 import { createMyTodo, deleteMyTodo, fetchMyTodos, type TodoItemResponse, updateMyTodo } from "../api/todo";
 
-const STORAGE_KEY = "todo-world-todos";
-
 type TodoContextType = {
     incompleteTodos: string[];
     completeTodos: string[];
@@ -23,7 +21,7 @@ export function TodoProvider(props: Props) {
     const { user } = useAuth();
 
     const [items, setItems] = useState<TodoItemResponse[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
     
     const incompleteTodos = items.filter((i) => !i.is_completed).map((i) => i.text);
     const completeTodos = items.filter((i) => i.is_completed).map((i) => i.text);

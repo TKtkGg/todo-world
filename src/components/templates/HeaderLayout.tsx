@@ -1,4 +1,4 @@
-import { FC, memo, type ReactNode } from "react"
+import { memo, type FC, type ReactNode } from "react"
 
 import { Header } from "../organisms/layout/Header";
 import { Outlet } from "react-router-dom";

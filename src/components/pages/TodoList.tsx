@@ -1,4 +1,4 @@
-import { useState, FC, memo, ChangeEvent } from "react"
+import { useState, memo, type FC, type ChangeEvent } from "react"
 import { Flex, Box, Heading } from "@chakra-ui/react";
 import "../../styles/todo.css"
 import { InputTodos } from "../organisms/todo/InputTodos";

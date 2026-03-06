@@ -1,5 +1,5 @@
 import { Avatar, Box, Flex, Stack, Text } from "@chakra-ui/react";
-import { FC, memo } from "react"
+import { memo, type FC } from "react"
 
 type Props = {
     imageUrl: string;

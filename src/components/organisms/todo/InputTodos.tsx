@@ -1,4 +1,4 @@
-import { FC, memo, ChangeEvent } from "react";
+import { memo, type FC, type ChangeEvent } from "react";
 import { Input, Flex } from "@chakra-ui/react";
 import { PrimaryButton } from "../../atoms/button/PrimaryButton";
 

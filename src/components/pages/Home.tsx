@@ -1,4 +1,4 @@
-import { FC, memo } from "react"
+import { memo, type FC } from "react"
 import { useAuth } from "../../contexts/AuthContent";
 import { useTodos } from "../../contexts/TodoContext";
 import { useNavigate } from "react-router-dom";

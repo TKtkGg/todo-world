@@ -1,5 +1,5 @@
 import { Button, Drawer, Portal } from "@chakra-ui/react";
-import { FC, memo } from "react"
+import { memo, type FC } from "react"
 
 type Props = {
     open: boolean;

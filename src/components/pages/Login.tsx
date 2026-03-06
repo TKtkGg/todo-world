@@ -1,5 +1,5 @@
-import { Box, Flex, Heading, Input, Separator, Stack, Text } from "@chakra-ui/react";
-import { FC, memo, useState } from "react"
+import { Box, Flex, Heading, Input, Separator, Stack } from "@chakra-ui/react";
+import { memo, useState, type FC } from "react"
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import { loginApi } from "../../api/auth";
@@ -9,7 +9,7 @@ export const Login: FC = memo(() => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
   const { showMessage } = useMessage();
 

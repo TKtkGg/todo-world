@@ -1,5 +1,5 @@
 import { IconButton } from "@chakra-ui/react";
-import { FC, memo } from "react"
+import { memo, type FC } from "react"
 import { FaBars } from "react-icons/fa";
 
 type Props = {

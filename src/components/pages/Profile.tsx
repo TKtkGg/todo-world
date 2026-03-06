@@ -1,13 +1,12 @@
-import { FC, memo, useEffect, useState } from "react"
+import { memo, useEffect, useState, type FC } from "react"
 import { useAuth } from "../../contexts/AuthContent";
-import { Avatar, Box, Flex, Heading, Input, Spinner, Stack, Textarea } from "@chakra-ui/react";
-import { PrimaryButton } from "../atoms/button/PrimaryButton";
+import { Flex, Heading, Spinner } from "@chakra-ui/react";
 import { useMessage } from "../../hooks/useMessage";
 import { fetchProfile, updateProfile } from "../../api/profile";
 import { ProfileCard } from "../organisms/user/ProfileCard";
 
 export const Profile: FC = memo(() => {
-  const { user, isLoading } = useAuth();
+  const { isLoading } = useAuth();
   const { showMessage } = useMessage();
 
   const [username, setUsername] = useState("");
