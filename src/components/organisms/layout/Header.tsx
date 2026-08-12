@@ -54,7 +54,7 @@ export const Header: FC = memo(() => {
         mr={8}
         _hover={{ cursor: "pointer" }}
         onClick={onClickHome}>
-            <Heading as="h1" fontSize={{ base: "md", md: "lg" }}>ユーザー管理アプリ</Heading>
+            <Heading as="h1" fontSize={{ base: "md", md: "lg" }}>TODO WORLD</Heading>
         </Flex>
         <Flex 
             align="center" 

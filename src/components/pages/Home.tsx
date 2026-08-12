@@ -17,16 +17,27 @@ export const Home: FC = memo(() => {
 
     return (
       <Flex
-      w="100%" 
-      py={{ base: 4, md: 6 }}
-      px={{ base: 4, md: 6 }}>
-
-        <Box flex="1">
+        w="100%"
+        direction={{ base: "column", md: "row" }}
+        align={{ base: "center", md: "flex-start" }}
+        justify={{ base: "flex-start", md: "space-between" }}
+        gap={{ base: 8, md: 6 }}
+        py={{ base: 4, md: 6 }}
+        px={{ base: 4, md: 6 }}
+      >
+        <Box flex="1" w="100%" textAlign={{ base: "center", md: "left" }}>
           <Heading as="h1" size="2xl">Home</Heading>
           {user && (<Text mt={2}>ようこそ、{user.username}</Text>)}
         </Box>
 
-        <Box flex="1" maxW={{ md: "400px"}}>
+        <Box
+          flex="1"
+          w="100%"
+          maxW="400px"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+        >
           <TodoListPreview incompleteTodos={incompleteTodos} completeTodos={completeTodos} />
           <Box mt={4}>
             <PrimaryButton onClick={() => navigate("/home/todo_list")}>
