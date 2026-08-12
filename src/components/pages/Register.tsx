@@ -25,7 +25,7 @@ export const Register: FC = memo(() => {
       localStorage.setItem("refreshToken", result.refresh);
       showMessage({ title: "アカウントを作成しました", type: "success" });
       navigate("/home");
-    } catch (error) {
+    } catch {
       showMessage({ title: "アカウント作成に失敗しました", type: "error" });
     } finally {
       setIsLoading(false);
@@ -44,9 +44,18 @@ export const Register: FC = memo(() => {
           <Input placeholder="ユーザー名" value={username} onChange={(e) => setUsername(e.target.value)} />
           <Input placeholder="パスワード" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           <Input placeholder="パスワード(確認)" type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
-          <PrimaryButton disabled={isLoading} onClick={handleRegister}>
-            {isLoading ? "登録中..." : "登録する"}
-          </PrimaryButton>
+          <Flex mt={6} gap={2} w="100%">
+            <Box flex="1" css={{ "& > button": { width: "100%" } }}>
+            <PrimaryButton disabled={isLoading} onClick={handleRegister}>
+              {isLoading ? "登録中..." : "登録する"}
+            </PrimaryButton>
+            </Box>
+            <Box flex="1" css={{ "& > button": { width: "100%" } }}>
+              <PrimaryButton onClick={() => navigate("/")}>
+                戻る
+              </PrimaryButton>
+            </Box>
+          </Flex>
         </Stack>
       </Box>
     </Flex>

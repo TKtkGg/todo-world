@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Input, Separator, Stack } from "@chakra-ui/react";
 import { memo, useState, type FC } from "react"
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginApi } from "../../api/auth";
 import { useMessage } from "../../hooks/useMessage";
 
@@ -23,7 +23,7 @@ export const Login: FC = memo(() => {
       localStorage.setItem("refreshToken", result.refresh);
       showMessage({ title: "ログインしました", type: "success" });
       navigate("/home");
-    } catch (error) {
+    } catch {
       showMessage({ title: "ログインに失敗しました", type: "error" });
     } finally {
       setIsLoading(false);
@@ -38,9 +38,21 @@ export const Login: FC = memo(() => {
         <Stack spaceY={3} py={4} px={10}>
           <Input placeholder="ユーザー名" value={username} onChange={(e) => setUsername(e.target.value)} />
           <Input placeholder="パスワード" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <PrimaryButton disabled={isLoading} onClick={handleLogin}>
-            {isLoading ? "ログイン中..." : "ログイン"}
-          </PrimaryButton>
+          <Flex mt={6} gap={2} w="100%">
+            <Box flex="1" css={{ "& > button": { width: "100%" } }}>
+              <PrimaryButton disabled={isLoading} onClick={handleLogin}>
+                {isLoading ? "ログイン中..." : "ログイン"}
+              </PrimaryButton>
+            </Box>
+            <Box flex="1" css={{ "& > button": { width: "100%" } }}>
+              <PrimaryButton onClick={() => navigate("/")}>
+                戻る
+              </PrimaryButton>
+            </Box>
+          </Flex>
+          <Box mt={6} textAlign="center" fontSize="sm" color="gray.500">
+            <Link to="/accounts/register">アカウント登録</Link>
+          </Box>
         </Stack>
       </Box>
     </Flex>
