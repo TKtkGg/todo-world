@@ -1,14 +1,15 @@
-import { Box, Flex, Heading, Stack } from "@chakra-ui/react";
+import { Box, Heading, Stack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { PrimaryButton } from "../atoms/button/PrimaryButton";
+import { AuthLayout } from "../templates/AuthLayout";
 
 export const AuthTop = () => {
   const navigate = useNavigate();
 
   return (
-    <Flex align="center" justify="center" height="100vh">
+    <AuthLayout>
       <Box bg="white" w="sm" p={4} borderRadius="md" boxShadow="md">
-        <Heading as="h1" size="lg" textAlign="center">
+        <Heading as="h2" size="lg" textAlign="center">
           認証メニュー
         </Heading>
         <Stack spaceY={4} mt={8}>
@@ -24,6 +25,6 @@ export const AuthTop = () => {
           </PrimaryButton>
         </Stack>
       </Box>
-    </Flex>
+    </AuthLayout>
   );
 };

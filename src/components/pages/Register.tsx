@@ -4,6 +4,7 @@ import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import { loginApi, registerApi } from "../../api/auth";
 import { useMessage } from "../../hooks/useMessage";
+import { AuthLayout } from "../templates/AuthLayout";
 
 export const Register: FC = memo(() => {
   const [username, setUsername] = useState("");
@@ -33,9 +34,9 @@ export const Register: FC = memo(() => {
   };
 
   return (
-    <Flex align="center" justify="center" height="100vh">
+    <AuthLayout>
       <Box bg="white" w="sm" p={4} borderRadius="md" boxShadow="md">
-        <Heading as="h1" size="lg" textAlign="center">アカウント登録</Heading>
+        <Heading as="h2" size="lg" textAlign="center">アカウント登録</Heading>
         <Separator my={4} />
         <Stack spaceY={3} py={4} px={10}>
           {errorMessage && (
@@ -46,9 +47,9 @@ export const Register: FC = memo(() => {
           <Input placeholder="パスワード(確認)" type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
           <Flex mt={6} gap={2} w="100%">
             <Box flex="1" css={{ "& > button": { width: "100%" } }}>
-            <PrimaryButton disabled={isLoading} onClick={handleRegister}>
-              {isLoading ? "登録中..." : "登録する"}
-            </PrimaryButton>
+              <PrimaryButton disabled={isLoading} onClick={handleRegister}>
+                {isLoading ? "登録中..." : "登録する"}
+              </PrimaryButton>
             </Box>
             <Box flex="1" css={{ "& > button": { width: "100%" } }}>
               <PrimaryButton onClick={() => navigate("/")}>
@@ -58,6 +59,6 @@ export const Register: FC = memo(() => {
           </Flex>
         </Stack>
       </Box>
-    </Flex>
+    </AuthLayout>
   )
 });

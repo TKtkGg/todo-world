@@ -4,6 +4,7 @@ import { PrimaryButton } from "../atoms/button/PrimaryButton";
 import { Link, useNavigate } from "react-router-dom";
 import { loginApi } from "../../api/auth";
 import { useMessage } from "../../hooks/useMessage";
+import { AuthLayout } from "../templates/AuthLayout";
 
 export const Login: FC = memo(() => {
   const [username, setUsername] = useState("");
@@ -31,9 +32,9 @@ export const Login: FC = memo(() => {
   };
 
   return (
-    <Flex align="center" justify="center" height="100vh">
+    <AuthLayout>
       <Box bg="white" w="sm" p={4} borderRadius="md" boxShadow="md">
-        <Heading as="h1" size="lg" textAlign="center">ログイン</Heading>
+        <Heading as="h2" size="lg" textAlign="center">ログイン</Heading>
         <Separator my={4} />
         <Stack spaceY={3} py={4} px={10}>
           <Input placeholder="ユーザー名" value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -55,6 +56,6 @@ export const Login: FC = memo(() => {
           </Box>
         </Stack>
       </Box>
-    </Flex>
+    </AuthLayout>
   )
 });
