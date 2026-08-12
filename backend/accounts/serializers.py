@@ -30,9 +30,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.Serializer):
     
     id = serializers.IntegerField(read_only=True)
-    username = serializers.CharField()
+    username = serializers.CharField(required=False)
     message = serializers.CharField(allow_blank=True, required=False)
     icon_url = serializers.CharField(allow_blank=True, required=False)
+    is_public = serializers.BooleanField(required=False)
 
     def to_representation(self, instance):
         user = instance
@@ -41,15 +42,18 @@ class ProfileSerializer(serializers.Serializer):
             profile = user.profile
             message = profile.message or ""
             icon_url = profile.icon_url or ""
+            is_public = profile.is_public
         except Profile.DoesNotExist:
             message = ""
             icon_url = ""
+            is_public = True
 
         return {
             "id": user.id,
             "username": user.username,
             "message": message,
-            "icon_url": icon_url
+            "icon_url": icon_url,
+            "is_public": is_public,
         }
     
     def update(self, instance, validated_data):
@@ -69,6 +73,10 @@ class ProfileSerializer(serializers.Serializer):
         new_icon_url = validated_data.get("icon_url")
         if new_icon_url is not None:
             profile.icon_url = new_icon_url
+
+        new_is_public = validated_data.get("is_public")
+        if new_is_public is not None:
+            profile.is_public = new_is_public
         
         profile.save()
 

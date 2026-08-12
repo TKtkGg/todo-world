@@ -17,6 +17,9 @@ class Profile(models.Model):
     # アイコン
     icon_url = models.URLField(blank=True)
 
+    # 公開設定（True=ユーザー一覧に表示 / False=他ユーザーから見えない）
+    is_public = models.BooleanField(default=True)
+
     def __str__(self) -> str:
         return f"Profile({self.user.username})"
 

@@ -1,10 +1,11 @@
 import { API_BASE_URL } from "./config"
 
-export type ProfileResponse =  {
+export type ProfileResponse = {
     id: number
     username: string
     message: string
     iconUrl: string
+    isPublic: boolean
 }
 
 function getAccessTokenOrThrow(): string {
@@ -13,6 +14,24 @@ function getAccessTokenOrThrow(): string {
         throw new Error("ログイン状態が無効です。再度ログインしてください。");
     }
     return token;
+}
+
+type RawProfile = {
+    id: number
+    username: string
+    message: string
+    icon_url?: string
+    is_public?: boolean
+}
+
+function mapProfile(raw: RawProfile): ProfileResponse {
+    return {
+        id: raw.id,
+        username: raw.username,
+        message: raw.message,
+        iconUrl: raw.icon_url ?? "",
+        isPublic: raw.is_public ?? true,
+    }
 }
 
 export async function fetchProfile(): Promise<ProfileResponse> {
@@ -33,20 +52,8 @@ export async function fetchProfile(): Promise<ProfileResponse> {
         throw new Error(detail);
     }
     
-    const raw = await response.json() as {
-        id: number
-        username: string
-        message: string
-        icon_url?: string
-    }
-
-    return {
-        id: raw.id,
-        username: raw.username,
-        message: raw.message,
-        iconUrl: raw.icon_url ?? "",
-    }
-
+    const raw = await response.json() as RawProfile
+    return mapProfile(raw)
 }
 
 export async function fetchUserProfile(userId: number): Promise<ProfileResponse> {
@@ -70,25 +77,15 @@ export async function fetchUserProfile(userId: number): Promise<ProfileResponse>
         throw new Error(detail);
     }
 
-    const raw = (await response.json()) as {
-        id: number;
-        username: string;
-        message: string;
-        icon_url?: string;
-    }
-
-    return {
-        id: raw.id,
-        username: raw.username,
-        message: raw.message,
-        iconUrl: raw.icon_url ?? "",
-    }
+    const raw = (await response.json()) as RawProfile
+    return mapProfile(raw)
 }
 
 export type UpdateProfileRequest = {
     username?: string
     message?: string
     iconUrl?: string
+    isPublic?: boolean
 }
 
 export async function updateProfile(
@@ -96,38 +93,29 @@ export async function updateProfile(
 ): Promise<ProfileResponse> {
     const accessToken = getAccessTokenOrThrow()
 
+    const body: Record<string, unknown> = {}
+    if (data.username !== undefined) body.username = data.username
+    if (data.message !== undefined) body.message = data.message
+    if (data.iconUrl !== undefined) body.icon_url = data.iconUrl
+    if (data.isPublic !== undefined) body.is_public = data.isPublic
+
     const response = await fetch(`${API_BASE_URL}/api/accounts/profile`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({
-            username: data.username,
-            message: data.message,
-            icon_url: data.iconUrl,
-        }),
+        body: JSON.stringify(body),
     });
 
     if(!response.ok) {
         const errorBody = await response.json().catch(() => null)
         const detail = 
             (errorBody && (errorBody.detail || JSON.stringify(errorBody))) ||
-            "プロフィールの取得に失敗しました。";
+            "プロフィールの保存に失敗しました。";
         throw new Error(detail);
     }
 
-    const raw = await response.json() as {
-        id: number
-        username: string
-        message: string
-        icon_url?: string
-    }
-
-    return {
-        id: raw.id,
-        username: raw.username,
-        message: raw.message,
-        iconUrl: raw.icon_url ?? "",
-    }
+    const raw = await response.json() as RawProfile
+    return mapProfile(raw)
 }

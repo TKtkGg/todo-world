@@ -3,12 +3,29 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from .serializers import ProfileSerializer, RegisterSerializer, TodoSerializer, UserWithIconSerializer
 
-from .models import Like, Todo
+from .models import Like, Profile, Todo
 
 User = get_user_model()
+
+
+def user_is_public(user) -> bool:
+    try:
+        return user.profile.is_public
+    except Profile.DoesNotExist:
+        return True
+
+
+def ensure_user_visible(request_user, target_user):
+    """自分自身以外の private ユーザーは 404 にする"""
+    if request_user.pk == target_user.pk:
+        return
+    if not user_is_public(target_user):
+        raise NotFound("ユーザーが見つかりません")
+
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -26,9 +43,14 @@ class MeView(APIView):
         )
 
 class UserListView(generics.ListAPIView):
-    queryset = User.objects.all()
     serializer_class = UserWithIconSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # public のユーザーのみ（Profile 未作成は公開扱い）
+        return User.objects.filter(
+            Q(profile__isnull=True) | Q(profile__is_public=True)
+        ).order_by("id")
 
 class ProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -51,23 +73,25 @@ class UserProfileView(APIView):
             user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise NotFound("ユーザーが見つかりません")
+        ensure_user_visible(request.user, user)
         serializer = ProfileSerializer(instance=user)
         return Response(serializer.data)
 
 class UserTodoListView(APIView):
-    permission_classes = {permissions.IsAuthenticated}
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, pk):
         try:
             user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise NotFound("ユーザーが見つかりません。")
+        ensure_user_visible(request.user, user)
         todos = Todo.objects.filter(user=user).order_by("id")
         serializer = TodoSerializer(todos, many=True)
         return Response(serializer.data)
 
 class MyTodoListCreateView(APIView):
-    permision_classes = {permissions.IsAuthenticated}
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         todos = Todo.objects.filter(user=request.user).order_by("id")
@@ -118,6 +142,11 @@ class UserLikeView(APIView):
     def get(self, request, pk):
         if request.user.pk == pk:
             return Response({"liked": False})
+        try:
+            to_user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise NotFound("ユーザーが見つかりません。")
+        ensure_user_visible(request.user, to_user)
         exists = Like.objects.filter(from_user=request.user, to_user_id=pk).exists()
         return Response({"liked": exists})
     
@@ -131,6 +160,7 @@ class UserLikeView(APIView):
             to_user = User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise NotFound("ユーザーが見つかりません。")
+        ensure_user_visible(request.user, to_user)
         obj, created = Like.objects.get_or_create(
             from_user=request.user,
             to_user=to_user,
