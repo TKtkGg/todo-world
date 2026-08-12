@@ -124,43 +124,83 @@ export const UserDetail: FC = memo(() => {
     const displayName = usernameFromState ?? (userId ? `ID: ${userId}` : "ユーザー");
 
     return(
-        <Box p={{ base: 4, md: 6}}>
-            <Heading as="h1" size="3xl" mb={4}>
+        <Box p={{ base: 4, md: 6 }} w="100%">
+            <Heading as="h1" size="3xl" mb={6} textAlign="center">
                 {displayName}さんの詳細
             </Heading>
             
-            <Flex align="flex-start" gap={6} direction={{ base: "column", md: "row"}}>
+            <Flex
+                align={{ base: "center", md: "flex-start" }}
+                justify="center"
+                gap={6}
+                direction={{ base: "column", md: "row" }}
+                w="100%"
+            >
                 {/* TODO */}
-                <Box flex="1" minW={0}>
-                    <Text fontWeight="bold" mb={2}>TODO</Text>
+                <Box
+                    w="100%"
+                    maxW={{ base: "100%", md: "400px" }}
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                >
+                    <Text fontWeight="bold" mb={2} w="100%" textAlign={{ base: "center", md: "left" }}>
+                        TODO
+                    </Text>
                     {userTodos ? (
-                        <TodoListPreview 
-                            incompleteTodos={userTodos.incompleteTodos}
-                            completeTodos={userTodos.completeTodos}
-                        />
+                        <Box
+                            w="100%"
+                            css={{
+                                ".incomplete-area, .complete-area": {
+                                    width: "100%",
+                                    maxWidth: "100%",
+                                    marginLeft: 0,
+                                    marginRight: 0,
+                                },
+                            }}
+                        >
+                            <TodoListPreview 
+                                incompleteTodos={userTodos.incompleteTodos}
+                                completeTodos={userTodos.completeTodos}
+                            />
+                        </Box>
                     ) : (
-                        <Box bg="gray.50" p={4} borderRadius="md" shadow="sm">
+                        <Box bg="gray.50" p={4} borderRadius="md" shadow="sm" w="100%">
                             <Text fontSize="sm" color="gray.600">読み込み中...</Text>
                         </Box>
                     )}
                 </Box>
 
                 {/* プロフィール */}
-                <Box flex="1">
-                    <Text fontWeight="bold" mb={2}>プロフィール</Text>
+                <Box
+                    w="100%"
+                    maxW={{ base: "100%", md: "420px" }}
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                >
+                    <Text fontWeight="bold" mb={2} w="100%" textAlign={{ base: "center", md: "left" }}>
+                        プロフィール
+                    </Text>
                     {profile ? (
-                        <>
+                        <Box w="100%">
                             <ProfileCard 
                                 username={profile.username}
                                 message={profile.message}
                                 iconUrl={profile.iconUrl}
                             />
                             {currentUser && profile.id !== currentUser.id && (
-                                <Button mt={4} colorScheme="pink" onClick={handleLike} disabled={hasLiked || likeLoading}>
+                                <Button
+                                    mt={4}
+                                    w="100%"
+                                    colorScheme="pink"
+                                    onClick={handleLike}
+                                    disabled={hasLiked || likeLoading}
+                                >
                                     {hasLiked ? "いいね済み" : likeLoading ? "送信中..." : "いいね！"}
                                 </Button>
                             )}
-                        </>
+                        </Box>
                     ) : (
                         <Text color="gray.500">プロフィールを取得できませんでした</Text>
                     )}
