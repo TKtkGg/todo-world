@@ -20,17 +20,44 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY",
-    "django-insecure-v2c62ep%2a=czvum#4wypbh3@8d&zu4#ujml6zuzr*w@@3pb4*",
+def env_list(name, default=""):
+    return [
+        value.strip()
+        for value in os.environ.get(name, default).split(",")
+        if value.strip()
+    ]
+
+
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+
+if DEBUG:
+    SECRET_KEY = os.environ.get("SECRET_KEY", "development-only-secret-key")
+else:
+    SECRET_KEY = os.environ["SECRET_KEY"]
+
+ALLOWED_HOSTS = env_list(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1",
 )
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "True") == "True"
+# HTTPSを有効にした本番環境で使用
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+    # HTTPS移行が完全に済んでから有効化
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Application definition
 
@@ -121,11 +148,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -140,15 +162,16 @@ REST_FRAMEWORK = {
     ],
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
-# 本番フロントのURL（Render環境変数 CORS_ORIGINS でカンマ区切りで追加）
-if os.environ.get("CORS_ORIGINS"):
-    CORS_ALLOWED_ORIGINS.extend(
-        origin.strip() for origin in os.environ["CORS_ORIGINS"].split(",") if origin.strip()
-    )
+CORS_ALLOWED_ORIGINS = env_list(
+    "CORS_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173",
+)
+
+CSRF_TRUSTED_ORIGINS = env_list(
+    "CSRF_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173",
+)
+
 
 from datetime import timedelta
 SIMPLE_JWT = {
